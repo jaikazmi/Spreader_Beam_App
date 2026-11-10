@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factor of Safety – Spreader Beam</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/auto-render.min.js"></script>
+<style>
+  :root{--bg:#f4f6fa;--card:#fff;--ink:#1c2433;--mute:#667085;--line:#e3e8ef;--acc:#2563eb;--ok:#15803d;--okbg:#ecfdf5;--bad:#b91c1c;--badbg:#fef2f2}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  .navbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;background:#0b1220;color:#fff;position:sticky;top:0;z-index:10;flex-wrap:wrap}
+  .navbar .logo{font-weight:700;padding:12px 0}
+  .nav-links{list-style:none;margin:0;padding:0;display:flex;gap:4px}
+  .nav-links a{display:block;padding:14px 14px;color:#cbd5e1;text-decoration:none;border-bottom:3px solid transparent}
+  .nav-links a:hover{color:#fff}
+  .nav-links a.active{color:#fff;border-bottom-color:#3b82f6}
+  header{padding:16px 24px;background:#111827;color:#fff}
+  header h1{margin:0;font-size:18px} header p{margin:2px 0 0;color:#9ca3af;font-size:13px}
+  main{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px;max-width:1500px;margin:auto}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+  label{display:flex;flex-direction:column;font-size:12px;color:var(--mute)}
+  input{margin-top:3px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--ink);width:100%}
+  input:focus{outline:2px solid var(--acc);border-color:transparent}
+  input[readonly]{background:#f1f5f9}
+  .actions{display:flex;gap:8px;margin-top:12px}
+  .btn{flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#f1f5f9}
+  .btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+  .btn.primary:hover{background:#1d4ed8}
+  .status{font-size:12px;border-radius:6px;padding:6px 8px;margin-bottom:10px}
+  .status.ok{background:var(--okbg);color:var(--ok)} .status.no{background:#fffbeb;color:#b45309;border:1px solid #fde68a}
+  .fos{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .fcard{border-radius:10px;padding:14px;border:2px solid var(--line)}
+  .fcard.ok{background:var(--okbg);border-color:#86efac;color:var(--ok)}
+  .fcard.bad{background:var(--badbg);border-color:#fca5a5;color:var(--bad)}
+  .fcard small{display:block;color:var(--mute)} .fcard b{font-size:30px;display:block;line-height:1.2}
+  .fcard .tag{font-weight:700;font-size:12px}
+  .fcard.main{grid-column:1/-1}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+  .katex-display{overflow-x:auto;overflow-y:hidden;margin:.6em 0}
+  h3{margin:14px 0 6px;font-size:14px}
+</style>
+<link rel="stylesheet" href="lib/theme.css">
+</head>
+<body>
+<nav class="navbar">
+  <a class="logo" href="index.html"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#2563eb"/><circle cx="16" cy="7" r="3" fill="none" stroke="#fbbf24" stroke-width="1.8"/><path d="M16 10 L8 18 M16 10 L24 18" stroke="#e2e8f0" stroke-width="1.5"/><rect x="5" y="18" width="22" height="4" rx="1" fill="#e2e8f0"/><rect x="9" y="23.5" width="14" height="4" rx="1" fill="#7dd3fc"/></svg><span>Spreader Beam<small>Analysis Platform</small></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</a></li>
+    <li><a href="diagram.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-8 4 5 4-9 3 6"/></svg>Diagram Internal (SFD &amp; BMD)</a></li>
+    <li><a href="safety.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Factor of Safety</a></li>
+  </ul>
+</nav>
+<header class="hero">
+  <div class="hero-text">
+    <span class="eyebrow">Langkah 2 · Evaluasi Keamanan</span>
+    <h1>Factor of Safety – Penampang I-Beam</h1>
+    <p>Beban maksimum diimpor otomatis dari halaman Diagram Internal.</p>
+    <div class="stepper"><a href="index.html"><i>0</i>Home</a><span class="sep"></span><a href="diagram.html"><i>1</i>Diagram Internal</a><span class="sep"></span><a href="safety.html" class="on"><i>2</i>Factor of Safety</a></div>
+  </div>
+  <img class="hero-art" src="lib/art/ibeam.svg" alt="Penampang I-beam">
+</header>
+<main>
+  <section>
+    <div class="card">
+      <h2>Imported Loads</h2>
+      <div id="status" class="status no">Memeriksa data…</div>
+      <div class="grid">
+        <label>V<sub>maks</sub> (kN)<input id="input_V_max" type="number" step="any" readonly></label>
+        <label>M<sub>maks</sub> (kN·m)<input id="input_M_max" type="number" step="any" readonly></label>
+        <label>N<sub>maks</sub> (kN)<input id="input_N_max" type="number" step="any" readonly></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Material</h2>
+      <div class="grid">
+        <label>Material<input id="mat" type="text" placeholder="mis. SS400"></label>
+        <label>Yield strength S<sub>y</sub> (MPa)<input id="input_Sy" type="number" placeholder="isi nilai" step="any"></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Dimensi I-Beam (mm)</h2>
+      <div class="grid">
+        <label>Tinggi H<input id="input_H" type="number" placeholder="isi nilai" step="any"></label>
+        <label>Lebar flange B<input id="input_B" type="number" placeholder="isi nilai" step="any"></label>
+        <label>Tebal flange t<sub>f</sub><input id="input_tf" type="number" placeholder="isi nilai" step="any"></label>
+        <label>Tebal web t<sub>w</sub><input id="input_tw" type="number" placeholder="isi nilai" step="any"></label>
+      </div>
+      <div class="actions">
+        <button id="calc" class="btn primary">Calculate FoS</button>
+        <button id="btnReset" class="btn">Reset</button>
+      </div>
+      <button id="btnBack" class="btn" style="width:100%;margin-top:8px">← Back to Diagram Internal</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Hasil Factor of Safety</h2>
+      <div id="result"><i style="color:var(--mute)">Tekan “Calculate FoS”.</i></div>
+    </div>
+    <div class="card"><h2>Titik Evaluasi pada Penampang</h2><div id="fig"><i style="color:var(--mute)">Isi dimensi I-beam untuk menampilkan penampang.</i></div></div>
+    <div class="card">
+      <h2>Properti Penampang & Tegangan</h2>
+      <div id="props"><i style="color:var(--mute)">Belum dihitung.</i></div>
+    </div>
+    <div class="card">
+      <h2>Perhitungan</h2>
+      <div id="eqs"><i style="color:var(--mute)">Belum dihitung.</i></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const val = id => parseFloat($(id).value);
+const fmt = (v,d=2) => Number.isFinite(v) ? v.toLocaleString('id-ID',{maximumFractionDigits:d}) : '–';
+const T = (v,d=2)=>{ if(!Number.isFinite(v)) return '?'; let s=Math.abs(v).toFixed(d); if(s.includes('.')) s=s.replace(/\.?0+$/,''); const [i,f]=s.split('.');
+  return (v<0?'-':'')+i.replace(/\B(?=(\d{3})+(?!\d))/g,'\\,')+(f?'{,}'+f:''); };
+const E = v => { if(!Number.isFinite(v)||v===0) return T(v); const e=Math.floor(Math.log10(Math.abs(v))); return `${T(v/10**e,3)}\\times10^{${e}}`; };
+
+// --- Import beban dari localStorage ---
+window.addEventListener('load', () => {
+  let V=null, M=null, at=null;
+  try{ V=localStorage.getItem('spreader_V_max'); M=localStorage.getItem('spreader_M_max'); at=localStorage.getItem('spreader_saved_at'); }catch(e){}
+  const st=$('status');
+  if(V!==null && M!==null && Number.isFinite(parseFloat(V)) && Number.isFinite(parseFloat(M))){
+    $('input_V_max').value = parseFloat(V).toFixed(2);
+    $('input_M_max').value = parseFloat(M).toFixed(2);
+    let Nn=null; try{ Nn=localStorage.getItem('spreader_N_max'); }catch(e){}
+    if(Nn!==null && Number.isFinite(parseFloat(Nn))) $('input_N_max').value = parseFloat(Nn).toFixed(2);
+    else $('input_N_max').readOnly = false;   // data lama tanpa N: isi manual
+    st.className='status ok';
+    st.textContent = '✓ Imported loads' + (at ? ' (disimpan ' + new Date(at).toLocaleString('id-ID') + ')' : '');
+  } else {
+    st.className='status no';
+    st.textContent = 'Peringatan: data beban belum tersedia. Hitung diagram di halaman Diagram Internal terlebih dahulu, atau isi manual di bawah.';
+    $('input_V_max').readOnly = false; $('input_M_max').readOnly = false; $('input_N_max').readOnly = false;
+  }
+});
+
+function calculateSafetyFactor(){
+  const V = val('input_V_max')*1000;        // kN → N
+  const M = val('input_M_max')*1e6;         // kN·m → N·mm
+  const Nf = val('input_N_max')*1000;       // kN → N
+  const H=val('input_H'), B=val('input_B'), tf=val('input_tf'), tw=val('input_tw'), Sy=val('input_Sy');
+  if([V,M,Nf,H,B,tf,tw,Sy].some(v=>!Number.isFinite(v)) || H<=2*tf || B<=tw){
+    $('result').innerHTML='<span style="color:var(--bad)">Lengkapi semua input terlebih dahulu (beban, S<sub>y</sub>, H, B, t<sub>f</sub>, t<sub>w</sub>); pastikan H > 2·t<sub>f</sub> dan B > t<sub>w</sub>.</span>'; return;
+  }
+  const c = H/2, hw = H/2 - tf;
+  const Ixx = (B*H**3)/12 - ((B-tw)*(H-2*tf)**3)/12;
+  const Qf  = B*tf*(c - tf/2);              // flange terhadap sumbu netral
+  const Qw  = tw*hw*hw/2;                   // setengah web
+  const Qmax = Qf + Qw;
+  const Atot = 2*B*tf + tw*(H-2*tf);        // luas penampang total
+  const sigAx = Nf/Atot;                    // tegangan aksial σa = N/A
+
+  // Titik 1: serat terluar flange (lentur maks, geser nol)
+  const sbA = M*c/Ixx, tauA = 0, sigA = sigAx + sbA, vmA = Math.sqrt(sigA**2 + 3*tauA**2);
+  // Titik 2: sumbu netral (lentur nol, geser maks)
+  const sbB = 0, tauB = V*Qmax/(Ixx*tw), sigB = sigAx + sbB, vmB = Math.sqrt(sigB**2 + 3*tauB**2);
+  // Titik 3: sambungan web–flange (lentur dan geser)
+  const sbJ = M*hw/Ixx, tauJ = V*Qf/(Ixx*tw), sigJ = sigAx + sbJ, vmJ = Math.sqrt(sigJ**2 + 3*tauJ**2);
+
+  const pts=[{k:'A',n:'Titik 1 – Serat terluar flange',sb:sbA,s:sigA,t:tauA,vm:vmA},{k:'B',n:'Titik 2 – Sumbu netral (web)',sb:sbB,s:sigB,t:tauB,vm:vmB},{k:'J',n:'Titik 3 – Sambungan web–flange',sb:sbJ,s:sigJ,t:tauJ,vm:vmJ}];
+  const vmMax = Math.max(vmA,vmJ,vmB);
+  const crit = pts.find(p=>p.vm===vmMax);
+  const fos = p => p.vm>0 ? Sy/p.vm : Infinity;
+  const FoS = fos(crit);
+  const cls = x => x>=2 ? 'ok' : 'bad';
+  const label = x => x>=2 ? 'AMAN (SAFE)' : 'KRITIS / GAGAL (UNSAFE) – FoS < 2';
+
+  window.lastCalc={V,M,Nf,H,B,tf,tw,Ixx,Qf,Qmax,sigAx,Sy,pts}; drawFigure();
+  $('result').innerHTML = `<div class="fos">
+    <div class="fcard main ${cls(FoS)}"><small>Factor of Safety (kritis di: ${crit.n})</small><b>${Number.isFinite(FoS)?FoS.toFixed(2):'∞'}</b><span class="tag">${label(FoS)}</span><small>σ<sub>vm</sub> maks = ${fmt(vmMax)} MPa &nbsp;|&nbsp; S<sub>y</sub> = ${fmt(Sy)} MPa &nbsp;|&nbsp; kriteria aman: FoS ≥ 2</small>${FoS<2?'<small style="color:var(--bad);font-weight:700;margin-top:6px">⚠ Peringatan: FoS di bawah 2. Penampang tidak memenuhi kriteria keamanan — ubah dimensi/material atau konfigurasi pengangkatan.</small>':''}</div>
+    ${pts.map(p=>`<div class="fcard ${cls(fos(p))}"><small>${p.n}</small><b>${Number.isFinite(fos(p))?fos(p).toFixed(2):'∞'}</b><span class="tag">σ<sub>vm</sub> = ${fmt(p.vm)} MPa</span></div>`).join('')}
+  </div>`;
+
+  $('props').innerHTML = `<table>
+    <tr><th>Properti</th><th>Nilai</th></tr>
+    <tr><td>I<sub>xx</sub></td><td>${fmt(Ixx,0)} mm⁴ (${(Ixx).toExponential(3)})</td></tr>
+    <tr><td>Luas penampang A</td><td>${fmt(Atot,0)} mm²</td></tr>
+    <tr><td>Tegangan aksial σ<sub>a</sub> = N<sub>maks</sub>/A</td><td>${fmt(sigAx)} MPa</td></tr>
+    <tr><td>c = H/2</td><td>${fmt(c)} mm</td></tr>
+    <tr><td>Q<sub>maks</sub> (sumbu netral)</td><td>${fmt(Qmax,0)} mm³</td></tr>
+    <tr><td>Q<sub>flange</sub> (sambungan web–flange)</td><td>${fmt(Qf,0)} mm³</td></tr>
+  </table>
+  <table style="margin-top:10px">
+    <tr><th>Titik</th><th>σ<sub>b</sub></th><th>σ<sub>x</sub> = σ<sub>a</sub>+σ<sub>b</sub></th><th>τ</th><th>σ<sub>v</sub> (MPa)</th><th>FoS</th></tr>
+    ${pts.map(p=>`<tr><td>${p.n}</td><td>${fmt(p.sb)}</td><td>${fmt(p.s)}</td><td>${fmt(p.t)}</td><td>${fmt(p.vm)}</td><td><b>${Number.isFinite(fos(p))?fos(p).toFixed(2):'∞'}</b></td></tr>`).join('')}
+  </table>`;
+
+  $('eqs').innerHTML = String.raw`
+  <h3>1. Properti penampang</h3>
+  $$I_{xx}=\frac{BH^3}{12}-\frac{(B-t_w)(H-2t_f)^3}{12}=\frac{${T(B)}(${T(H)})^3}{12}-\frac{(${T(B)}-${T(tw)})(${T(H)}-2(${T(tf)}))^3}{12}=${E(Ixx)}\ \text{mm}^4$$
+  $$A=2Bt_f+t_w(H-2t_f)=2(${T(B)})(${T(tf)})+${T(tw)}(${T(H)}-2(${T(tf)}))=${T(Atot,0)}\ \text{mm}^2$$
+  $$Q_{junction}=B\,t_f\,\frac{H-t_f}{2}=${T(B)}(${T(tf)})\frac{${T(H)}-${T(tf)}}{2}=${T(Qf,0)}\ \text{mm}^3$$
+  $$Q_{max}=Q_{junction}+\frac{t_w\,(H-2t_f)^2}{8}=${T(Qf,0)}+\frac{${T(tw)}\,(${T(H)}-2(${T(tf)}))^2}{8}=${T(Qmax,0)}\ \text{mm}^3$$
+
+  <h3>2. Beban maksimum dari diagram internal</h3>
+  $$V_{max}=${T(V/1000)}\ \text{kN}=${T(V,0)}\ \text{N}\qquad M_{max}=${T(M/1e6)}\ \text{kN m}=${E(M)}\ \text{N mm}\qquad N_{max}=${T(Nf/1000)}\ \text{kN}=${T(Nf,0)}\ \text{N}$$
+
+  <h3>3. Tegangan aksial (σ<sub>a</sub>)</h3>
+  $$\sigma_a=\frac{N_{max}}{A}=\frac{${T(Nf,0)}}{${T(Atot,0)}}=${T(sigAx,3)}\ \text{MPa}\quad\text{(sama di seluruh penampang)}$$
+
+  <h3>4. Tegangan lentur (σ<sub>b</sub>)</h3>
+  $$\textbf{Titik 1 (serat terluar):}\quad \sigma_b=\frac{M_{max}\,(H/2)}{I_{xx}}=\frac{${E(M)}\,(${T(c)})}{${E(Ixx)}}=${T(sbA,3)}\ \text{MPa}$$
+  $$\textbf{Titik 2 (sumbu netral):}\quad \sigma_b=0$$
+  $$\textbf{Titik 3 (web–flange):}\quad \sigma_b=\frac{M_{max}\,(H/2-t_f)}{I_{xx}}=\frac{${E(M)}\,(${T(hw)})}{${E(Ixx)}}=${T(sbJ,3)}\ \text{MPa}$$
+
+  <h3>5. Tegangan geser (τ)</h3>
+  $$\textbf{Titik 1 (serat terluar):}\quad \tau=0$$
+  $$\textbf{Titik 2 (sumbu netral):}\quad \tau=\frac{V_{max}\,Q_{max}}{I_{xx}\,t_w}=\frac{${T(V,0)}\,(${T(Qmax,0)})}{${E(Ixx)}\,(${T(tw)})}=${T(tauB,3)}\ \text{MPa}$$
+  $$\textbf{Titik 3 (web–flange):}\quad \tau=\frac{V_{max}\,Q_{junction}}{I_{xx}\,t_w}=\frac{${T(V,0)}\,(${T(Qf,0)})}{${E(Ixx)}\,(${T(tw)})}=${T(tauJ,3)}\ \text{MPa}$$
+
+  <h3>6. Tegangan normal total (σ<sub>x</sub> = σ<sub>a</sub> + σ<sub>b</sub>)</h3>
+  $$\textbf{Titik 1:}\ \ \sigma_x=${T(sigAx,3)}+${T(sbA,3)}=${T(sigA,3)}\ \text{MPa}$$
+  $$\textbf{Titik 2:}\ \ \sigma_x=${T(sigAx,3)}+0=${T(sigB,3)}\ \text{MPa}$$
+  $$\textbf{Titik 3:}\ \ \sigma_x=${T(sigAx,3)}+${T(sbJ,3)}=${T(sigJ,3)}\ \text{MPa}$$
+
+  <h3>7. Tegangan von Mises (plane stress)</h3>
+  $$\sigma_v=\sqrt{\sigma_x^2+3\tau^2}$$
+  $$\textbf{Titik 1:}\ \ \sigma_v=\sqrt{(${T(sigA,3)})^2+3(${T(tauA,3)})^2}=${T(vmA,3)}\ \text{MPa}$$
+  $$\textbf{Titik 2:}\ \ \sigma_v=\sqrt{(${T(sigB,3)})^2+3(${T(tauB,3)})^2}=${T(vmB,3)}\ \text{MPa}$$
+  $$\textbf{Titik 3:}\ \ \sigma_v=\sqrt{(${T(sigJ,3)})^2+3(${T(tauJ,3)})^2}=${T(vmJ,3)}\ \text{MPa}$$
+
+  <h3>8. Factor of Safety</h3>
+  $$\sigma_{v,max}=${T(vmMax,3)}\ \text{MPa}\ \ \text{(${crit.n})}\qquad FoS=\frac{\sigma_{yield}}{\sigma_{v,max}}=\frac{${T(Sy)}}{${T(vmMax)}}=${Number.isFinite(FoS)?T(FoS,3):'\\infty'}\quad ${FoS>=2?'\\color{#15803d}{\\ge 2\\ (\\text{SAFE})}':'\\color{#b91c1c}{< 2\\ (\\text{UNSAFE})}'}$$`;
+  if(window.renderMathInElement) renderMathInElement($('eqs'),{delimiters:[{left:'$$',right:'$$',display:true}],throwOnError:false});
+}
+// ===== Visualisasi titik evaluasi (tampilan saja; tidak mengubah perhitungan) =====
+function drawFigure(){
+  const box = $('fig'); if(!box) return;
+  const H=val('input_H'), B=val('input_B'), tf=val('input_tf'), tw=val('input_tw');
+  if(![H,B,tf,tw].every(Number.isFinite) || H<=2*tf || B<=tw || H<=0){
+    box.innerHTML='<i style="color:var(--mute)">Isi dimensi I-beam (H, B, tf, tw) untuk menampilkan penampang dan titik evaluasi.</i>'; return;
+  }
+  const C = window.lastCalc;                       // hasil perhitungan terakhir (jika ada)
+  const NEU='#2563eb', OK='#15803d', BAD='#b91c1c';
+  const col = i => C ? (C.pts[i].vm>0 && C.Sy/C.pts[i].vm < 2 ? BAD : OK) : NEU;
+  const hw = H/2 - tf;
+  // Gambar skematis (tidak berskala) agar flange & web tetap terlihat jelas
+  const Hp=300, Bp=Math.min(Math.max(B/H*Hp*1.6,110),200);
+  const tfp=Math.min(Math.max(tf/H*Hp*3,20),40), twp=Math.min(Math.max(tw/H*Hp*3,9),22), hwp=Hp/2-tfp;
+  const vy = y => { const a=Math.abs(y), sg=y<0?-1:1; return sg*(a<=hw ? a/hw*hwp : hwp+(a-hw)/tf*tfp); };
+  const cy=190, cx=130;                            // pusat penampang pada panel 1
+  const top=cy-Hp/2;
+  const f = v => Number.isFinite(v) ? v.toLocaleString('id-ID',{maximumFractionDigits:1}) : '';
+  // posisi tiga titik evaluasi
+  const P1={x:cx, y:top}, P2={x:cx, y:cy}, P3={x:cx+twp/2, y:cy-hwp};
+  const dot=(p,n,dx,dy)=>`<circle cx="${p.x}" cy="${p.y}" r="10" fill="${col(n-1)}" stroke="#fff" stroke-width="2"/><text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">${n}</text>`;
+
+  // ---- Panel 1: penampang ----
+  let g1 = `
+    <text x="12" y="22" font-size="12" font-weight="800" fill="#334363">(a) Penampang &amp; titik evaluasi</text>
+    <text x="12" y="${top+Hp+46}" font-size="10" fill="#94a3b8" font-style="italic">skema, tidak berskala</text>
+    <path d="M${cx-Bp/2},${top} h${Bp} v${tfp} h${-(Bp-twp)/2} v${Hp-2*tfp} h${(Bp-twp)/2} v${tfp} h${-Bp} v${-tfp} h${(Bp-twp)/2} v${-(Hp-2*tfp)} h${-(Bp-twp)/2} z" fill="#e2e8f4" stroke="#1e293b" stroke-width="1.6"/>
+    <line x1="${cx-Bp/2-26}" y1="${cy}" x2="${cx+Bp/2+60}" y2="${cy}" stroke="#d97706" stroke-dasharray="7 5" stroke-width="1.4"/>
+    <text x="${cx+Bp/2+8}" y="${cy-6}" font-size="11" fill="#d97706" font-style="italic">sumbu netral</text>
+    <!-- dimensi -->
+    <g stroke="#64748b" stroke-width="1" fill="#64748b" font-size="11" font-style="italic">
+      <line x1="${cx-Bp/2-16}" y1="${top}" x2="${cx-Bp/2-16}" y2="${top+Hp}"/>
+      <text x="${cx-Bp/2-34}" y="${cy+4}" stroke="none">H</text>
+      <line x1="${cx-Bp/2}" y1="${top+Hp+16}" x2="${cx+Bp/2}" y2="${top+Hp+16}"/>
+      <text x="${cx-3}" y="${top+Hp+30}" stroke="none">B</text>
+      <text x="${cx+Bp/2+6}" y="${top+tfp/2+4}" stroke="none">t<tspan font-size="8" dy="2">f</tspan></text>
+      <text x="${cx+twp/2+6}" y="${cy+hwp/2}" stroke="none">t<tspan font-size="8" dy="2">w</tspan></text>
+    </g>
+    ${dot(P1,1)}${dot(P2,2)}${dot(P3,3)}`;
+  // garis penghubung label
+  g1 += `<g font-size="11" fill="#334363">
+    <line x1="${P1.x+10}" y1="${P1.y}" x2="${cx+Bp/2+22}" y2="${top-12}" stroke="#94a3b8"/><text x="${cx+Bp/2+26}" y="${top-9}">Titik 1</text>
+    <line x1="${P3.x+10}" y1="${P3.y}" x2="${cx+Bp/2+22}" y2="${P3.y-2}" stroke="#94a3b8"/><text x="${cx+Bp/2+26}" y="${P3.y+2}">Titik 3</text>
+    <text x="${cx+12}" y="${cy+22}">Titik 2</text></g>`;
+
+  // ---- Panel 2: tegangan lentur & normal total ----
+  const x2=380, y0=cy;
+  let g2 = `<text x="${x2-80}" y="22" font-size="12" font-weight="800" fill="#334363">(b) Tegangan normal σ<tspan font-size="9" dy="2">x</tspan><tspan dy="-2"> = σ</tspan><tspan font-size="9" dy="2">a</tspan><tspan dy="-2">+σ</tspan><tspan font-size="9" dy="2">b</tspan></text>
+    <line x1="${x2}" y1="${top-8}" x2="${x2}" y2="${top+Hp+8}" stroke="#94a3b8"/>
+    <line x1="${x2-70}" y1="${cy}" x2="${x2+70}" y2="${cy}" stroke="#d97706" stroke-dasharray="7 5"/>`;
+  if(C){
+    const sa=C.sigAx, sbT=C.M*(H/2)/C.Ixx;
+    const mx=Math.max(Math.abs(sa+sbT),Math.abs(sa-sbT),1e-9), k=62/mx;     // px per MPa
+    const X=v=>x2+v*k, Y=y=>cy-vy(y);                                         // y positif ke atas
+    const prof=[H/2,hw,0,-hw,-H/2].map(y=>X(sa+C.M*y/C.Ixx).toFixed(1)+','+Y(y).toFixed(1)).join(' ');
+    g2 += `<polygon points="${prof} ${x2},${Y(-H/2)} ${x2},${Y(H/2)}" fill="${NEU}" fill-opacity=".14"/>
+      <polyline points="${prof}" fill="none" stroke="${NEU}" stroke-width="2"/>
+      <g font-size="10.5" fill="#1e293b">
+      <text x="${X(sa+sbT)+(sa+sbT>=0?6:-6)}" y="${Y(H/2)+4}" text-anchor="${sa+sbT>=0?'start':'end'}">1: ${f(C.pts[0].s)}</text>
+      <text x="${X(sa)+(sa>=0?8:-8)}" y="${cy-8}" text-anchor="${sa>=0?'start':'end'}">2: ${f(C.pts[1].s)}</text>
+      <text x="${X(sa+C.M*hw/C.Ixx)+8}" y="${Y(hw)+4}">3: ${f(C.pts[2].s)}</text></g>
+      <g fill="#fff" stroke-width="2"><circle cx="${X(sa+sbT)}" cy="${Y(H/2)}" r="4" stroke="${col(0)}"/><circle cx="${X(sa)}" cy="${cy}" r="4" stroke="${col(1)}"/><circle cx="${X(sa+C.M*hw/C.Ixx)}" cy="${Y(hw)}" r="4" stroke="${col(2)}"/></g>
+      <text x="${x2-70}" y="${top+Hp+30}" font-size="10.5" fill="#64748b">σ<tspan font-size="8" dy="2">a</tspan><tspan dy="-2"> = ${f(sa)} MPa (N/A)</tspan></text>`;
+  } else g2 += `<text x="${x2}" y="${cy-Hp/2-14}" text-anchor="middle" font-size="11" fill="#94a3b8">tekan Calculate FoS</text>`;
+
+  // ---- Panel 3: tegangan geser ----
+  const x3=640;
+  let g3 = `<text x="${x3-70}" y="22" font-size="12" font-weight="800" fill="#334363">(c) Tegangan geser τ</text>
+    <line x1="${x3}" y1="${top-8}" x2="${x3}" y2="${top+Hp+8}" stroke="#94a3b8"/>
+    <line x1="${x3-10}" y1="${cy}" x2="${x3+130}" y2="${cy}" stroke="#d97706" stroke-dasharray="7 5"/>`;
+  if(C){
+    const tauWeb = y => C.V/(C.Ixx*tw)*(C.Qf + tw/2*(hw*hw - y*y));          // |y| <= hw
+    const tauFl  = y => C.V/(C.Ixx*B)*(B/2*((H/2)**2 - y*y));                 // hw <= |y| <= H/2
+    const tmax=Math.max(tauWeb(0),1e-9), k=105/tmax, X=t=>x3+t*k, Y=y=>cy-vy(y);
+    const pts=[]; const n=24;
+    for(let i=0;i<=n;i++){ const y=H/2 - (tf*i/n); pts.push([X(tauFl(y)),Y(y)]); }          // flange atas
+    for(let i=0;i<=n;i++){ const y=hw - (2*hw*i/n); pts.push([X(tauWeb(y)),Y(y)]); }        // web
+    for(let i=0;i<=n;i++){ const y=-hw - (tf*i/n); pts.push([X(tauFl(y)),Y(y)]); }          // flange bawah
+    const poly = pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    g3 += `<polygon points="${x3},${Y(H/2)} ${poly} ${x3},${Y(-H/2)}" fill="#7c3aed" fill-opacity=".14" stroke="#7c3aed" stroke-width="1.8" stroke-linejoin="round"/>
+      <g font-size="10.5" fill="#1e293b">
+      <text x="${X(0)+6}" y="${Y(H/2)-2}">1: τ = 0</text>
+      <text x="${X(tmax)+8}" y="${cy-8}">2: ${f(C.pts[1].t)}</text>
+      <text x="${X(C.pts[2].t)+8}" y="${Y(hw)+4}">3: ${f(C.pts[2].t)}</text></g>
+      <g fill="#fff" stroke-width="2"><circle cx="${X(0)}" cy="${Y(H/2)}" r="4" stroke="${col(0)}"/><circle cx="${X(tmax)}" cy="${cy}" r="4" stroke="${col(1)}"/><circle cx="${X(C.pts[2].t)}" cy="${Y(hw)}" r="4" stroke="${col(2)}"/></g>
+      <text x="${x3-70}" y="${top+Hp+30}" font-size="10.5" fill="#64748b">τ (MPa); melompat di web–flange (tw → B)</text>`;
+  } else g3 += `<text x="${x3+40}" y="${cy-Hp/2-14}" text-anchor="middle" font-size="11" fill="#94a3b8">tekan Calculate FoS</text>`;
+
+  const legend = `<div class="figleg">
+    <span><i style="background:${col(0)}">1</i> Serat terluar flange — lentur maks, τ = 0</span>
+    <span><i style="background:${col(1)}">2</i> Sumbu netral (web) — τ maks, σ<sub>b</sub> = 0</span>
+    <span><i style="background:${col(2)}">3</i> Sambungan web–flange — lentur &amp; geser bersamaan</span>
+    ${C?'<span class="hint">Warna titik: hijau = FoS ≥ 2, merah = FoS &lt; 2</span>':''}</div>`;
+  box.innerHTML = `<svg viewBox="0 0 800 ${Math.max(cy+Hp/2+50,400)}" width="100%" style="max-height:520px;font-family:inherit">${g1}${g2}${g3}</svg>${legend}`;
+}
+['input_H','input_B','input_tf','input_tw'].forEach(i=>$(i).addEventListener('input',()=>{ window.lastCalc=null; drawFigure(); }));
+window.addEventListener('load', ()=>setTimeout(drawFigure,0));
+const SIDS=['mat','input_Sy','input_H','input_B','input_tf','input_tw'];
+const SKEY='spreader_safety_inputs';
+function saveSafetyInputs(){ const o={}; SIDS.forEach(i=>o[i]=$(i).value); try{localStorage.setItem(SKEY,JSON.stringify(o));}catch(e){} }
+function restoreSafetyInputs(){
+  let raw=null; try{raw=localStorage.getItem(SKEY);}catch(e){}
+  if(!raw) return;
+  try{ const o=JSON.parse(raw); SIDS.forEach(i=>{ if(o[i]!==undefined) $(i).value=o[i]; }); }catch(e){}
+  if(['input_V_max','input_M_max','input_N_max',...SIDS.slice(1)].every(i=>Number.isFinite(val(i)))) calculateSafetyFactor();
+}
+$('calc').addEventListener('click', ()=>{ calculateSafetyFactor(); saveSafetyInputs(); });
+$('btnReset').addEventListener('click', ()=>{
+  if(!confirm('Reset input material dan dimensi?')) return;
+  SIDS.forEach(i=>$(i).value='');
+  try{localStorage.removeItem(SKEY);}catch(e){}
+  $('result').innerHTML='<i style="color:var(--mute)">Tekan “Calculate FoS”.</i>';
+  $('props').innerHTML='<i style="color:var(--mute)">Belum dihitung.</i>';
+  $('eqs').innerHTML='<i style="color:var(--mute)">Belum dihitung.</i>';
+  window.lastCalc=null; drawFigure();
+});
+window.addEventListener('load', restoreSafetyInputs);
+$('btnBack').addEventListener('click', ()=>{ location.href='diagram.html'; });
+</script>
+</body>
+</html>

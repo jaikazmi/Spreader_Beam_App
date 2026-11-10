@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalkulator SFD & BMD – Spreader Beam</title>
+<script src="lib/chart.umd.min.js"></script>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/auto-render.min.js"></script>
+<style>
+  :root{--bg:#f4f6fa;--card:#fff;--ink:#1c2433;--mute:#667085;--line:#e3e8ef;--acc:#2563eb;--sfd:#0d9488;--bmd:#dc2626}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  .navbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;background:#0b1220;color:#fff;position:sticky;top:0;z-index:10;flex-wrap:wrap}
+  .navbar .logo{font-weight:700;padding:12px 0}
+  .nav-links{list-style:none;margin:0;padding:0;display:flex;gap:4px}
+  .nav-links a{display:block;padding:14px 14px;color:#cbd5e1;text-decoration:none;border-bottom:3px solid transparent}
+  .nav-links a:hover{color:#fff}
+  .nav-links a.active{color:#fff;border-bottom-color:#3b82f6}
+  .actions{display:flex;gap:8px}
+  .btn{flex:1;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer}
+  .btn:hover:not(:disabled){background:#f1f5f9}
+  .btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+  .btn.primary:hover{background:#1d4ed8!important}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .saved{margin-top:8px;font-size:12px;color:#15803d}
+  .saved.dirty{color:#b45309}
+  .saved a{color:var(--acc)}
+  header{padding:16px 24px;background:#111827;color:#fff}
+  header h1{margin:0;font-size:18px} header p{margin:2px 0 0;color:#9ca3af;font-size:13px}
+  main{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px;max-width:1500px;margin:auto}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+  label{display:flex;flex-direction:column;font-size:12px;color:var(--mute)}
+  input{margin-top:3px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--ink);width:100%}
+  input:focus{outline:2px solid var(--acc);border-color:transparent}
+  .conv{align-self:end;padding:6px 0;font-size:14px;color:var(--mute)}
+  .conv b{color:var(--ink)}
+  .res{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .res div{background:var(--bg);border-radius:8px;padding:8px 10px}
+  .res b{display:block;font-size:17px} .res span{font-size:12px;color:var(--mute)}
+  .warn{color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 8px;margin-top:8px;font-size:12px;display:none}
+  .err{color:#b91c1c;background:#fef2f2;border-color:#fecaca}
+  .chartbox{height:300px;position:relative}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  td,th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  h3{margin:14px 0 6px;font-size:14px}
+  .seg{margin:10px 0;border-top:1px solid var(--line);padding-top:6px}
+  .katex-display{overflow-x:auto;overflow-y:hidden;margin:.6em 0}
+  .eq{background:var(--bg);border-radius:8px;padding:10px 12px;line-height:1.9;font-size:13px;overflow-x:auto}
+  #seg td{padding:8px 6px;line-height:1.8}
+  code{font-family:Consolas,monospace;font-size:12px}
+</style>
+<link rel="stylesheet" href="lib/theme.css">
+</head>
+<body>
+<nav class="navbar">
+  <a class="logo" href="index.html"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#2563eb"/><circle cx="16" cy="7" r="3" fill="none" stroke="#fbbf24" stroke-width="1.8"/><path d="M16 10 L8 18 M16 10 L24 18" stroke="#e2e8f0" stroke-width="1.5"/><rect x="5" y="18" width="22" height="4" rx="1" fill="#e2e8f0"/><rect x="9" y="23.5" width="14" height="4" rx="1" fill="#7dd3fc"/></svg><span>Spreader Beam<small>Analysis Platform</small></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</a></li>
+    <li><a href="diagram.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-8 4 5 4-9 3 6"/></svg>Diagram Internal (SFD &amp; BMD)</a></li>
+    <li><a href="safety.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Factor of Safety</a></li>
+  </ul>
+</nav>
+<header class="hero">
+  <div class="hero-text">
+    <span class="eyebrow">Langkah 1 · Gaya Internal</span>
+    <h1>Spreader Beam – Shear Force & Bending Moment Diagram</h1>
+    <p>Konvensi: gaya ke atas (+), beban ke bawah (−); x diukur dari titik O (ujung kiri beam).</p>
+    <div class="stepper"><a href="index.html"><i>0</i>Home</a><span class="sep"></span><a href="diagram.html" class="on"><i>1</i>Diagram Internal</a><span class="sep"></span><a href="safety.html"><i>2</i>Factor of Safety</a></div>
+  </div>
+  <img class="hero-art" src="lib/art/lifting.svg" alt="Lifting arrangement spreader beam">
+</header>
+<main>
+  <section>
+    <div class="card">
+      <h2>Beban</h2>
+      <div class="grid">
+        <label>g (m/s²)<input id="g" type="number" placeholder="isi nilai" step="0.01"></label>
+        <label>&nbsp;<span style="padding:8px 0">F₁=F₂=F₃=F₄=W<sub>l</sub>/4</span></label>
+        <label>Massa beban (kg)<input id="mass" type="number" placeholder="isi massa beban"></label>
+        <div class="conv">= <b id="wlkN">–</b> kN</div>
+        <label>Massa spreader (kg)<input id="wsm" type="number" placeholder="isi nilai"></label>
+        <div class="conv">= <b id="wskN">–</b> kN</div>
+        <label>F₁ (kN)<input id="f1" type="number" step="any"></label>
+        <label>F₂ (kN)<input id="f2" type="number" step="any"></label>
+        <label>F₃ (kN)<input id="f3" type="number" step="any"></label>
+        <label>F₄ (kN)<input id="f4" type="number" step="any"></label>
+      </div>
+      <label style="flex-direction:row;align-items:center;gap:6px;margin-top:8px"><input id="auto" type="checkbox" checked style="width:auto;margin:0"> F₁–F₄ otomatis dari W<sub>l</sub>/4</label>
+    </div>
+    <div class="card">
+      <h2>Posisi dari O (m)</h2>
+      <div class="grid">
+        <label>F₁ (x=0)<input id="p1" type="number" placeholder="isi nilai" step="any"></label>
+        <label>Sling A (a)<input id="pa" type="number" placeholder="isi nilai" step="any"></label>
+        <label>F₂ (b)<input id="pb" type="number" placeholder="isi nilai" step="any"></label>
+        <label>W<sub>s</sub> (c)<input id="pc" type="number" placeholder="isi nilai" step="any"></label>
+        <label>F₃ (d)<input id="pd" type="number" placeholder="isi nilai" step="any"></label>
+        <label>Sling B (e)<input id="pe" type="number" placeholder="isi nilai" step="any"></label>
+        <label>F₄ / ujung (L)<input id="pL" type="number" placeholder="isi nilai" step="any"></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Sudut sling (dari horizontal)</h2>
+      <div class="grid">
+        <label>θ sling A (°)<input id="th" type="number" placeholder="isi nilai" step="any"></label>
+        <label>β sling B (°)<input id="be" type="number" placeholder="isi nilai" step="any"></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="actions">
+        <button id="btnCalc" class="btn primary">Calculate</button>
+        <button id="btnReset" class="btn">Reset</button>
+        <button id="btnNext" class="btn" disabled>Next page →</button>
+      </div>
+      <div id="saved" class="saved"></div>
+    </div>
+    <div class="card">
+      <h2>Hasil Reaksi</h2>
+      <div class="res">
+        <div><span>F<sub>a</sub> sin θ (vertikal)</span><b id="rAv">–</b></div>
+        <div><span>F<sub>b</sub> sin β (vertikal)</span><b id="rBv">–</b></div>
+        <div><span>Gaya tarik sling F<sub>a</sub></span><b id="rA">–</b></div>
+        <div><span>Gaya tarik sling F<sub>b</sub></span><b id="rB">–</b></div>
+        <div><span>|V| maks (gaya geser)</span><b id="vmax">–</b><span id="vloc"></span></div>
+        <div><span>|M| maks (momen bending)</span><b id="mmax">–</b><span id="mloc"></span></div>
+        <div><span>|N| maks (gaya normal)</span><b id="nmax">–</b><span id="nloc"></span></div>
+      </div>
+      <div id="msg" class="warn"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card"><h2>Free Body Diagram – Kasus Pembebanan</h2><img src="fbd.jpg" alt="Free body diagram spreader beam" style="width:100%;max-width:760px;display:block;margin:auto"></div>
+    <div class="card"><h2>Shear Force Diagram (kN)</h2><div class="chartbox"><canvas id="cV"></canvas></div></div>
+    <div class="card"><h2>Bending Moment Diagram (kN·m)</h2><div class="chartbox"><canvas id="cM"></canvas></div></div>
+    <div class="card"><h2>Normal Force Diagram (kN)</h2><div class="chartbox"><canvas id="cN"></canvas></div></div>
+    <div class="card"><h2>Persamaan & Perhitungan</h2><div id="seg"><i style="color:var(--mute)">Isi massa beban untuk menampilkan perhitungan.</i></div></div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id).value);
+const rad = d => d*Math.PI/180;
+const fmt = (v,d=2) => Number.isFinite(v) ? v.toLocaleString('id-ID',{maximumFractionDigits:d}) : '–';
+
+function mkChart(id,color,ylab){
+  return new Chart($(id),{
+    type:'line',
+    data:{datasets:[{data:[],borderColor:color,backgroundColor:color+'33',fill:'origin',borderWidth:2,pointRadius:0,tension:0}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,parsing:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`x=${fmt(c.parsed.x)} m → ${fmt(c.parsed.y)}`}}},
+      scales:{x:{type:'linear',title:{display:true,text:'x (m)'}},y:{title:{display:true,text:ylab}}}}
+  });
+}
+const cV = mkChart('cV','#0d9488','V (kN)');
+const cM = mkChart('cM','#dc2626','M (kN·m)');
+const cN = mkChart('cN','#7c3aed','N (kN)');
+
+let lastV=null, lastM=null, lastN=null;
+function update(){
+  lastV = lastM = lastN = null;
+  const W = num('mass')*num('g')/1000;           // kN
+  const WsKN = num('wsm')*num('g')/1000;
+  $('wlkN').textContent = fmt(W); $('wskN').textContent = fmt(WsKN);
+  if($('auto').checked){ ['f1','f2','f3','f4'].forEach(i=>$(i).value = Number.isFinite(W) ? +(W/4).toFixed(4) : ''); }
+  const Ws = WsKN, F=[1,2,3,4].map(i=>num('f'+i));
+  const x = {F1:num('p1'),a:num('pa'),F2:num('pb'),Ws:num('pc'),F3:num('pd'),b:num('pe'),F4:num('pL')};
+  const th=rad(num('th')), be=rad(num('be'));
+  const L = x.F4, msg=$('msg');
+  msg.style.display='none'; msg.className='warn';
+  const vals=[...F,Ws,...Object.values(x),th,be];
+  if(vals.some(v=>!Number.isFinite(v))) return;
+
+  // Reaksi vertikal sling dari ΣFy=0 dan ΣM(O)=0
+  const Wtot = F[0]+F[1]+F[2]+F[3]+Ws;
+  const Mdown = F[0]*x.F1+F[1]*x.F2+Ws*x.Ws+F[2]*x.F3+F[3]*x.F4;
+  const den = x.b - x.a;
+  if(Math.abs(den)<1e-9){ msg.textContent='Posisi sling A dan B tidak boleh sama.'; msg.className='warn err'; msg.style.display='block'; return; }
+  const Bv = (Mdown - Wtot*x.a)/(x.b-x.a);
+  const Av = Wtot - Bv;
+  const Fa = Av/Math.sin(th), Fb = Bv/Math.sin(be);
+  $('rAv').textContent=fmt(Av)+' kN'; $('rBv').textContent=fmt(Bv)+' kN';
+  $('rA').textContent=fmt(Fa)+' kN';  $('rB').textContent=fmt(Fb)+' kN';
+
+  // Cek ΣFx
+  const hx = Fa*Math.cos(th)-Fb*Math.cos(be);
+  const notes=[];
+  if(Math.abs(hx)>1e-3*Math.max(1,Math.abs(Fa))) notes.push(`ΣFx ≠ 0 (selisih ${fmt(hx)} kN): sudut θ/β tidak konsisten dengan keseimbangan horizontal. Gunakan β = arccos(Fa·cosθ/Fb) jika perlu.`);
+  const ord=[x.F1,x.a,x.F2,x.Ws,x.F3,x.b,x.F4];
+  if(ord.some((v,i)=>i&&v<ord[i-1])) notes.push('Urutan posisi bukan 0 ≤ a ≤ b ≤ c ≤ d ≤ e ≤ L; grafik tetap dihitung berdasarkan posisi sebenarnya.');
+  if(Av<0||Bv<0) notes.push('Reaksi sling negatif (sling akan tekan) – periksa posisi sling.');
+  if(notes.length){msg.innerHTML=notes.join('<br>');msg.style.display='block';}
+
+  // Beban titik (ke atas +)
+  const P = [
+    {nt:'F_1',s:'x_O',sg:-1,x:x.F1,p:-F[0]},{nt:'F_a\\sin\\theta',s:'x_A',sg:1,x:x.a,p:Av},{nt:'F_2',s:'x_B',sg:-1,x:x.F2,p:-F[1]},
+    {nt:'W_s',s:'x_C',sg:-1,x:x.Ws,p:-Ws},{nt:'F_3',s:'x_D',sg:-1,x:x.F3,p:-F[2]},{nt:'F_b\\sin\\beta',s:'x_E',sg:1,x:x.b,p:Bv},{nt:'F_4',s:'x_F',sg:-1,x:x.F4,p:-F[3]}
+  ].sort((p,q)=>p.x-q.x);
+  const names=['O','A','B','C','D','E','F'];
+
+  const V=[], M=[];
+  const Mat = xx => P.reduce((s,q)=> xx>q.x ? s+q.p*(xx-q.x) : s, 0);
+  let v=0; V.push({x:0,y:0}); M.push({x:0,y:0});
+  const rows=[]; let prev=0, segs=[];
+  const pts=[0,...P.map(q=>q.x),L].filter((u,i,a)=>u>=0&&u<=L&&(i===0||u>a[i-1]-1e-12));
+  // Shear: sebelum & sesudah tiap beban
+  const Vx=[{x:0,y:0}];
+  let cum=0;
+  P.forEach(q=>{ Vx.push({x:q.x,y:cum}); cum+=q.p; Vx.push({x:q.x,y:cum}); });
+  Vx.push({x:L,y:0});
+  V.length=0; Vx.forEach(p=>V.push(p));
+  const Mx=[{x:0,y:0}]; P.forEach(q=>Mx.push({x:q.x,y:Mat(q.x)})); Mx.push({x:L,y:Mat(L)});
+  M.length=0; Mx.forEach(p=>M.push(p));
+
+  // Gaya normal: hanya komponen horizontal sling (Fa cosθ di A, −Fb cosβ di E)
+  const Hx = q => q.s==='x_A' ? Fa*Math.cos(th) : (q.s==='x_E' ? -Fb*Math.cos(be) : 0);
+  const Nx=[{x:0,y:0}]; let ncum=0;
+  P.filter(q=>q.s==='x_A'||q.s==='x_E').forEach(q=>{ Nx.push({x:q.x,y:ncum}); ncum+=Hx(q); Nx.push({x:q.x,y:ncum}); });
+  Nx.push({x:L,y:ncum});
+  const N = Nx;
+
+  cV.data.datasets[0].data=V; cM.data.datasets[0].data=M; cN.data.datasets[0].data=N;
+  const xmin=Math.min(0,...P.map(q=>q.x)), xmax=Math.max(L,...P.map(q=>q.x));
+  [cV,cM,cN].forEach(c=>{c.options.scales.x.min=xmin; c.options.scales.x.max=xmax; c.update();});
+
+  const peak = (arr,unit,idV,idL)=>{
+    const mx = Math.max(...arr.map(p=>Math.abs(p.y)));
+    if(mx<1e-9){ $(idV).textContent=`0 ${unit}`; $(idL).textContent='di seluruh beam'; return; }
+    const hit = arr.filter(p=>Math.abs(Math.abs(p.y)-mx) <= 1e-6*Math.max(1,mx));
+    const sign = hit[0].y<0?'−':'+';
+    const x0=Math.min(...hit.map(p=>p.x)), x1=Math.max(...hit.map(p=>p.x));
+    const where = Math.abs(x1-x0)<1e-9 ? `di x = ${fmt(x0)} m` : `pada x = ${fmt(x0)} – ${fmt(x1)} m`;
+    const seg = names[P.findIndex(q=>Math.abs(q.x-x0)<1e-9)];
+    $(idV).textContent = `${sign}${fmt(mx)} ${unit}`;
+    $(idL).textContent = where + (seg && Math.abs(x1-x0)<1e-9 ? ` (titik ${seg})` : '');
+  };
+  peak(V,'kN','vmax','vloc');
+  peak(M,'kN·m','mmax','mloc');
+  peak(N,'kN','nmax','nloc');
+
+  // Nilai maksimum terakhir; disimpan hanya saat tombol Calculate ditekan
+  const maxV = Math.max(...V.map(p=>Math.abs(p.y)));
+  const maxM = Math.max(...M.map(p=>Math.abs(p.y)));
+  lastV = maxV; lastM = maxM; lastN = Math.max(...N.map(p=>Math.abs(p.y)));
+
+  // Tabel persamaan
+  const T = (v,d=2)=>{ if(!Number.isFinite(v)) return '?'; const s=Math.abs(v).toFixed(d).replace(/\.?0+$/,''); const [i,f]=s.split('.');
+    return (v<0?'-':'')+i.replace(/\B(?=(\d{3})+(?!\d))/g,'\\,')+(f?'{,}'+f:''); };
+  const A = (v,d=2)=>T(Math.abs(v),d);
+  const termL = (q,j,withX)=> (q.sg<0?'-':(j===0?'':'+')) + ' ' + q.nt + (q.s==='x_O'?' x':`(x-${q.s})`);
+  const termN = (q,j)=> (q.p<0?'-':(j===0?'':'+')) + ' ' + A(q.p,3) + (q.x===0?' x':`(x-${T(q.x)})`);
+  const Wl = F[0]+F[1]+F[2]+F[3];
+  const Wlk = num('mass')*num('g')/1000;
+  const ok = Math.abs(hx)<=1e-3*Math.max(1,Math.abs(Fa));
+  let h=String.raw`<h3>1. Beban tiap titik</h3>
+  $$\begin{aligned}
+  F_1=F_2=F_3=F_4 &= \frac{W_l}{4}=\frac{m\,g}{4}=\frac{${T(num('mass'))}\times${T(num('g'))}/1000}{4}=${T(Wlk/4,3)}\ \text{kN}\\
+  W_s &= m_s\,g = ${T(num('wsm'))}\times${T(num('g'))}/1000 = ${T(Ws,3)}\ \text{kN}
+  \end{aligned}$$
+  <h3>2. Persamaan kesetimbangan</h3>
+  $$\sum F_y=0:\quad F_a\sin\theta+F_b\sin\beta=W_l+W_s=${T(Wl,3)}+${T(Ws,3)}=${T(Wtot,3)}\ \text{kN}$$
+  $$\sum M_O=0:\quad F_a\sin\theta\,x_A+F_b\sin\beta\,x_E=F_1x_O+F_2x_B+W_sx_C+F_3x_D+F_4x_F$$
+  $$F_a\sin\theta\,(${T(x.a)})+F_b\sin\beta\,(${T(x.b)})=${T(F[0])}(${T(x.F1)})+${T(F[1])}(${T(x.F2)})+${T(Ws)}(${T(x.Ws)})+${T(F[2])}(${T(x.F3)})+${T(F[3])}(${T(x.F4)})=${T(Mdown,3)}\ \text{kN m}$$
+  <b>Penyelesaian</b>
+  $$F_b\sin\beta=\frac{\sum M-(W_l+W_s)\,x_A}{x_E-x_A}=\frac{${T(Mdown,3)}-${T(Wtot,3)}(${T(x.a)})}{${T(x.b)}-${T(x.a)}}=${T(Bv,3)}\ \text{kN}$$
+  $$F_a\sin\theta=(W_l+W_s)-F_b\sin\beta=${T(Wtot,3)}-${T(Bv,3)}=${T(Av,3)}\ \text{kN}$$
+  $$F_a=\frac{${T(Av,3)}}{\sin ${T(num('th'))}^\circ}=${T(Fa,3)}\ \text{kN},\qquad F_b=\frac{${T(Bv,3)}}{\sin ${T(num('be'))}^\circ}=${T(Fb,3)}\ \text{kN}$$
+  $$\sum F_x=0:\quad F_a\cos\theta-F_b\cos\beta=${T(Fa*Math.cos(th),3)}-${T(Fb*Math.cos(be),3)}=${T(hx,3)}\ \text{kN}\quad ${ok?'\\color{#15803d}{(\\approx 0\\ \\checkmark)}':'\\color{#b45309}{(\\neq 0)}'}$$
+  $$F_a=\frac{F_b\cos\beta}{\cos\theta}=${T(Fb*Math.cos(be)/Math.cos(th),3)}\ \text{kN}$$
+  <h3>3. Sectioning beam (x diukur dari titik O)</h3>`;
+  let c=0;
+  for(let i=0;i<P.length-1;i++){
+    c+=P[i].p;
+    if(P[i+1].x-P[i].x<1e-12) continue;
+    const seg=P.slice(0,i+1);
+    const k = seg.reduce((s,q)=>s+q.p*q.x,0);
+    const hs = seg.filter(q=>q.s==='x_A'||q.s==='x_E');
+    const nsym = hs.map((q,j)=> q.s==='x_A' ? (j?'+ ':'')+String.raw`F_a\cos\theta` : '- '+String.raw`F_b\cos\beta`).join(' ');
+    const nnum = hs.map((q,j)=> (Hx(q)<0?'- ':(j?'+ ':''))+T(Math.abs(Hx(q)),3)).join(' ');
+    const nval = hs.reduce((s,q)=>s+Hx(q),0);
+    const nEq = hs.length ? `N &= ${nsym} = ${nnum} = ${T(nval,3)}\\ \\text{kN}` : String.raw`N &= 0\ \text{kN}`;
+    const vs = seg.map((q,j)=>(q.sg<0?'-':(j?'+':''))+' '+q.nt).join(' ');
+    const vn = seg.map((q,j)=>(q.p<0?'-':(j?'+':''))+' '+A(q.p,3)).join(' ');
+    h+=String.raw`<div class="seg"><b>Segmen ${P[i].s.slice(2)}–${P[i+1].s.slice(2)}: &nbsp;${fmt(P[i].x)} &lt; x &lt; ${fmt(P[i+1].x)} m</b>
+    $$\begin{aligned}
+    V &= ${vs}\\ &= ${vn} = ${T(c,3)}\ \text{kN}\\[4pt]
+    M &= ${seg.map((q,j)=>termL(q,j)).join(' ')}\\
+      &= ${seg.map((q,j)=>termN(q,j)).join(' ')}\\
+      &= ${T(c,3)}\,x ${k>0?'-':'+'} ${A(k,3)}\ \text{kN m}\\[4pt]
+    ${nEq}
+    \end{aligned}$$</div>`;
+  }
+  $('seg').innerHTML=h;
+  if(window.renderMathInElement) renderMathInElement($('seg'),{delimiters:[{left:'$$',right:'$$',display:true}],throwOnError:false});
+}
+const IDS=['mass','g','wsm','f1','f2','f3','f4','p1','pa','pb','pc','pd','pe','pL','th','be'];
+const KEYS=['spreader_V_max','spreader_M_max','spreader_N_max','spreader_saved_at','spreader_diagram_inputs'];
+const store = {
+  get:k=>{try{return localStorage.getItem(k);}catch(e){return null;}},
+  set:(k,v)=>{try{localStorage.setItem(k,v);return true;}catch(e){return false;}},
+  del:k=>{try{localStorage.removeItem(k);}catch(e){}}
+};
+function setSaved(html,dirty){ const s=$('saved'); s.innerHTML=html; s.className='saved'+(dirty?' dirty':''); }
+function markSaved(){
+  setSaved(`✓ Tersimpan: V<sub>maks</sub> = ${fmt(lastV)} kN, M<sub>maks</sub> = ${fmt(lastM)} kN·m`,false);
+  $('btnNext').disabled=false;
+}
+function markDirty(){
+  if($('btnNext').disabled && !$('saved').textContent) return;
+  setSaved('Perubahan belum disimpan — tekan Calculate.',true);
+  $('btnNext').disabled=true;
+}
+function saveInputs(){
+  const o={auto:$('auto').checked}; IDS.forEach(i=>o[i]=$(i).value);
+  store.set('spreader_diagram_inputs',JSON.stringify(o));
+}
+function restoreInputs(){
+  const raw=store.get('spreader_diagram_inputs'); if(!raw) return false;
+  try{ const o=JSON.parse(raw); IDS.forEach(i=>{ if(o[i]!==undefined) $(i).value=o[i]; }); $('auto').checked = o.auto!==false; return true; }catch(e){ return false; }
+}
+function calculate(){
+  update();
+  if(lastV===null){ setSaved('Lengkapi semua input terlebih dahulu (massa, posisi, sudut).',true); $('btnNext').disabled=true; return; }
+  const ok = store.set('spreader_V_max',lastV) & store.set('spreader_M_max',lastM) & store.set('spreader_N_max',lastN) & store.set('spreader_saved_at',new Date().toISOString());
+  saveInputs();
+  if(ok) markSaved(); else setSaved('Penyimpanan lokal tidak tersedia di browser ini.',true);
+}
+function resetAll(){
+  if(!confirm('Reset semua input dan data tersimpan?')) return;
+  IDS.forEach(i=>$(i).value=''); $('auto').checked=true;
+  KEYS.forEach(store.del);
+  [cV,cM,cN].forEach(c=>{c.data.datasets[0].data=[];c.update();});
+  ['rAv','rBv','rA','rB','vmax','mmax','nmax'].forEach(i=>$(i).textContent='–');
+  ['vloc','mloc','nloc'].forEach(i=>$(i).textContent='');
+  $('msg').style.display='none';
+  $('seg').innerHTML='<i style="color:var(--mute)">Isi massa beban untuk menampilkan perhitungan.</i>';
+  setSaved('',false); $('btnNext').disabled=true;
+  update();
+}
+['f1','f2','f3','f4'].forEach(i=>$(i).addEventListener('input',()=>{$('auto').checked=false;}));
+document.querySelectorAll('input').forEach(e=>e.addEventListener('input',()=>{update();markDirty();}));
+$('btnCalc').addEventListener('click',calculate);
+$('btnReset').addEventListener('click',resetAll);
+$('btnNext').addEventListener('click',()=>{location.href='safety.html';});
+
+// Pulihkan input saat kembali dari halaman lain
+if(restoreInputs()){
+  update();
+  if(lastV!==null && store.get('spreader_V_max')!==null) markSaved();
+} else update();
+</script>
+</body>
+</html>

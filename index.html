@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spreader Beam Analysis Platform</title>
+<style>
+  :root{--bg:#eef2f8;--card:#fff;--ink:#0f1a2e;--mute:#5d6b84;--line:#dde5f1}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.55 system-ui,sans-serif}
+  .navbar{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#0a1226;color:#fff;position:sticky;top:0;z-index:20;flex-wrap:wrap}
+  .nav-links{list-style:none;margin:0;padding:0;display:flex}
+  .nav-links a{text-decoration:none}
+</style>
+<link rel="stylesheet" href="lib/theme.css">
+</head>
+<body>
+<nav class="navbar">
+  <a class="logo" href="index.html"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#2563eb"/><circle cx="16" cy="7" r="3" fill="none" stroke="#fbbf24" stroke-width="1.8"/><path d="M16 10 L8 18 M16 10 L24 18" stroke="#e2e8f0" stroke-width="1.5"/><rect x="5" y="18" width="22" height="4" rx="1" fill="#e2e8f0"/><rect x="9" y="23.5" width="14" height="4" rx="1" fill="#7dd3fc"/></svg><span>Spreader Beam<small>Analysis Platform</small></span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Home</a></li>
+    <li><a href="diagram.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-8 4 5 4-9 3 6"/></svg>Diagram Internal (SFD &amp; BMD)</a></li>
+    <li><a href="safety.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Factor of Safety</a></li>
+  </ul>
+</nav>
+
+<section class="home-hero">
+  <div class="home-wrap">
+    <div>
+      <span class="eyebrow">Heavy Lifting · Structural Analysis</span>
+      <h1>Analisis <em>Spreader Beam</em> 200 Ton, dari gaya internal hingga faktor keamanan.</h1>
+      <p class="lead">Hitung reaksi sling, plot diagram SFD, BMD dan gaya normal, lalu evaluasi tegangan serta Factor of Safety penampang I-beam dalam satu alur kerja terintegrasi.</p>
+      <div class="cta">
+        <a class="p" href="diagram.html">Mulai Analisis
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="g" href="safety.html">Factor of Safety</a>
+      </div>
+    </div>
+    <img class="home-art" src="lib/art/lifting.svg" alt="Lifting arrangement: crane hook, sling, spreader beam dan beban">
+  </div>
+  <div class="spec-strip">
+    <div class="spec"><b>200 ton</b><span>Kapasitas angkat</span></div>
+    <div class="spec"><b>18 m</b><span>Panjang beam</span></div>
+    <div class="spec"><b>4 titik</b><span>Lifting point beban</span></div>
+    <div class="spec"><b>SS400</b><span>Material</span></div>
+    <div class="spec"><b>I 1000×300</b><span>Profil penampang</span></div>
+  </div>
+</section>
+
+<div class="home-body">
+  <h2 class="sec-title">Alur Kerja Analisis</h2>
+  <p class="sub sec-sub">Tiga langkah berurutan — data tersimpan otomatis di browser dan diteruskan ke halaman berikutnya.</p>
+  <div class="flow">
+    <a href="diagram.html">
+      <span class="num">1</span>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 16l4-8 4 5 4-9 3 6"/></svg></div>
+      <h3>Diagram Internal</h3>
+      <p>Reaksi sling F<sub>a</sub>, F<sub>b</sub> dan diagram gaya dalam sepanjang beam.</p>
+      <ul><li>Shear Force Diagram (SFD)</li><li>Bending Moment Diagram (BMD)</li><li>Normal Force Diagram (NFD)</li></ul>
+      <span class="go">Buka halaman →</span>
+    </a>
+    <a href="safety.html">
+      <span class="num">2</span>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>Factor of Safety</h3>
+      <p>Evaluasi tegangan penampang I-beam terhadap yield strength material.</p>
+      <ul><li>I<sub>xx</sub> dan statical moment Q</li><li>Tegangan normal, geser, von Mises</li><li>Indikator aman / bahaya</li></ul>
+      <span class="go">Buka halaman →</span>
+    </a>
+    <a href="diagram.html">
+      <span class="num">3</span>
+      <div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 14l3-3 3 2 4-5"/></svg></div>
+      <h3>Tinjau &amp; Ulangi</h3>
+      <p>Ubah posisi sling, sudut, atau beban dan lihat grafik berubah secara real-time.</p>
+      <ul><li>Input tersimpan saat kembali</li><li>Reset kapan saja</li><li>Persamaan LaTeX tiap segmen</li></ul>
+      <span class="go">Kembali ke diagram →</span>
+    </a>
+  </div>
+
+  <div class="dash">
+    <div class="card">
+      <h2>Status Data Tersimpan</h2>
+      <div id="homeStatus" style="margin-bottom:12px"><span class="pill no">Belum ada data</span></div>
+      <div class="kpis">
+        <div class="kpi"><span>V<sub>maks</sub></span><b id="kV">–</b> <small>kN</small></div>
+        <div class="kpi"><span>M<sub>maks</sub></span><b id="kM">–</b> <small>kN·m</small></div>
+        <div class="kpi"><span>N<sub>maks</sub></span><b id="kN">–</b> <small>kN</small></div>
+      </div>
+      <p style="color:var(--mute);margin:12px 0 0;font-size:12.5px" id="homeAt">Hitung diagram internal terlebih dahulu pada langkah 1.</p>
+    </div>
+    <div class="card">
+      <h2>Fitur Platform</h2>
+      <div class="feat">
+        <div>Kalkulasi statis ΣF<sub>y</sub>, ΣF<sub>x</sub>, ΣM</div>
+        <div>Grafik interaktif Chart.js</div>
+        <div>Persamaan per segmen (LaTeX)</div>
+        <div>Lokasi V, M, N maksimum</div>
+        <div>Von Mises di 3 titik kritis</div>
+        <div>Berjalan offline di browser</div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="site">Spreader Beam Analysis Platform · data disimpan lokal di browser (localStorage)</footer>
+
+<script>
+  // Hanya membaca data tersimpan untuk ditampilkan; tidak mengubah perhitungan apa pun.
+  (function(){
+    const g=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+    const f=v=>{const n=parseFloat(v);return Number.isFinite(n)?n.toLocaleString('id-ID',{maximumFractionDigits:2}):'–';};
+    const V=g('spreader_V_max'), M=g('spreader_M_max'), N=g('spreader_N_max'), at=g('spreader_saved_at');
+    if(V!==null && M!==null){
+      document.getElementById('kV').textContent=f(V);
+      document.getElementById('kM').textContent=f(M);
+      document.getElementById('kN').textContent=f(N);
+      document.getElementById('homeStatus').innerHTML='<span class="pill ok">✓ Data siap dipakai di Factor of Safety</span>';
+      if(at) document.getElementById('homeAt').textContent='Terakhir dihitung: '+new Date(at).toLocaleString('id-ID');
+    }
+  })();
+</script>
+</body>
+</html>
